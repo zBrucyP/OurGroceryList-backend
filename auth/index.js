@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs'); // was causing node not to launch
 const Joi = require('joi');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -22,6 +23,24 @@ const schema = Joi.object({
         .required()
 });
 
+function createSendAccessToken(user, res, next) {
+    const payload = { 
+        id: user._id,
+        username: user.username,
+    };
+
+    // create authentication token and respond w/ it
+    jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '2h'}, (err, token) => {
+        if(err) {
+            repondError422(res, next);
+        } else {
+            res.json({
+                token: token
+            });
+        }
+    });
+}
+
 router.get('/', (req, res) => {
     res.json('in auth base');
 });
@@ -39,13 +58,13 @@ router.post('/login', (req, res, next) => {
                 // authenticate the user
                 bcrypt.compare(req.body.password, user.password).then((result) => {
                     if(result) { // password is correct, authenticate user
-                        res.json('pass is correct');
+                        createSendAccessToken(user, res, next);
                     } else { // password is incorrect
-                        repondError422(res, next, 'Username or password not found..')
+                        repondError422(res, next);
                     }
                 });
             } else { // user was not found, return error
-                repondError422(res, next, 'Username or password not found.');
+                repondError422(res, next);
             }
         });
     } else { // user-entered data did not meet requirements or there was another error
@@ -78,11 +97,7 @@ router.post('/signup', (req, res, next) => {
 
                     // insert new user into db and respond
                     users.insert(newUser).then((insertedUser) => { 
-                        res.status(201);
-                        res.json({
-                            msg: `User ${insertedUser.username} has been created.`,
-                            err: `${err}`
-                        });
+                        createSendAccessToken(insertedUser, res, next);
                     });
                 });
             }
@@ -95,7 +110,7 @@ router.post('/signup', (req, res, next) => {
 
 function repondError422(res, next, errorReason) {
     res.status(422);
-    const error = new Error(`Cannot login: ${errorReason}`);
+    const error = new Error('Cannot login');
     next(error);
 }
 
