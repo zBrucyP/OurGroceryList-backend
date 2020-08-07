@@ -7,26 +7,30 @@ const router = express.Router();
 
 const db = require('../db/connection'); 
 const users = db.get('users');
-users.createIndex('username');
+users.createIndex('email', { unique: true });
 
 const schema = Joi.object({
-    username: Joi.string()
-        .alphanum()
-        .min(4)
-        .max(25)
+    email: Joi.string()
+        .email()
+        .trim()
         .required(),
     
+    fname: Joi.string()
+        .trim()
+        .min(2)
+        .max(50)
+        .required(),
+
     password: Joi.string()
         .trim()
         .min(8)
         .max(100)
-        .required()
+        .required(),
 });
 
 function createSendAccessToken(user, res, next) {
     const payload = { 
         id: user._id,
-        username: user.username,
     };
 
     // create authentication token and respond w/ it
@@ -35,6 +39,8 @@ function createSendAccessToken(user, res, next) {
             repondError422(res, next);
         } else {
             res.json({
+                userid: user._id,
+                fname: user.fname,
                 token: token
             });
         }
@@ -47,13 +53,13 @@ router.get('/', (req, res) => {
 
 router.post('/login', (req, res, next) => {
     const validation = schema.validate({
-        username: req.body.username,
-        password: req.body.password
+        email: req.body.email,
+        password: req.body.password,
     });
     
     if(validation.error === undefined) { // user-entered data passed validation check
         // check if user exists in database
-        users.findOne({username: req.body.username}).then((user) => {
+        users.findOne({email: req.body.email}).then((user) => {
             if(user) { // user was found
                 // authenticate the user
                 bcrypt.compare(req.body.password, user.password).then((result) => {
@@ -75,24 +81,26 @@ router.post('/login', (req, res, next) => {
 
 router.post('/signup', (req, res, next) => {
     const validation = schema.validate({
-        username: req.body.username,
-        password: req.body.password
+        fname: req.body.fname,
+        password: req.body.password,
+        email: req.body.email,
     });
     
     if(validation.error === undefined) { // user-entered data passed validation check
-        users.findOne({username: req.body.username}).then((user) => {
-            if(user) { // username is already in use, return error
-                const error = new Error('Username is not available');
+        users.findOne({email: req.body.email}).then((user) => {
+            if(user) { // email is already in use, return error
+                const error = new Error('Email is already in use.');
                 res.status(409);
                 next(error);
-            } else { // username not in use, create new user
+            } else { // email not in use, create new user
                 //salt and hash the password
                 bcrypt.hash(req.body.password, 10).then((hash, err) => { 
                     
                     // new user object to store in db
                     const newUser = { 
-                        username: req.body.username,
-                        password: hash
+                        fname: req.body.fname,
+                        password: hash,
+                        email: req.body.email,
                     };
 
                     // insert new user into db and respond
