@@ -39,7 +39,6 @@ function createSendAccessToken(user, res, next) {
             repondError422(res, next);
         } else {
             res.json({
-                userid: user._id,
                 fname: user.fname,
                 token: token
             });

@@ -5,11 +5,13 @@ const helmet = require('helmet');
 
 const app = express();
 
+const authMiddleware = require('./auth/middlewares');
 const auth = require('./auth/index');
 
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(authMiddleware.verifyTokenIdentifyUser);
 
 app.get('/', (req, res) => {
     res.json({
@@ -18,6 +20,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth', auth);
+//app.use('')
 
 
 const port = process.env.PORT || 1337;
