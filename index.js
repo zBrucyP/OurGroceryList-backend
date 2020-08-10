@@ -7,6 +7,7 @@ const app = express();
 
 const authMiddleware = require('./auth/middlewares');
 const auth = require('./auth/index');
+const lists = require('./api/lists');
 
 app.use(helmet());
 app.use(cors());
@@ -20,8 +21,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth', auth);
-//app.use('')
-
+app.use('/api/lists', authMiddleware.isLoggedIn, lists);
 
 const port = process.env.PORT || 1337;
 app.listen(port, () => {

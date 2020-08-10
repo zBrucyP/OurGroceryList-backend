@@ -9,7 +9,7 @@ const db = require('../db/connection');
 const users = db.get('users');
 users.createIndex('email', { unique: true });
 
-const schema = Joi.object({
+const signupSchema = Joi.object({
     email: Joi.string()
         .email()
         .trim()
@@ -27,6 +27,20 @@ const schema = Joi.object({
         .max(100)
         .required(),
 });
+
+const loginSchema = Joi.object({
+    email: Joi.string()
+        .email()
+        .trim()
+        .required(),
+
+    password: Joi.string()
+        .trim()
+        .min(8)
+        .max(100)
+        .required(),
+});
+
 
 function createSendAccessToken(user, res, next) {
     const payload = { 
@@ -51,7 +65,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/login', (req, res, next) => {
-    const validation = schema.validate({
+    const validation = loginSchema.validate({
         email: req.body.email,
         password: req.body.password,
     });
@@ -79,7 +93,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.post('/signup', (req, res, next) => {
-    const validation = schema.validate({
+    const validation = signupSchema.validate({
         fname: req.body.fname,
         password: req.body.password,
         email: req.body.email,
