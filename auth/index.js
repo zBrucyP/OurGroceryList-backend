@@ -45,6 +45,7 @@ const loginSchema = Joi.object({
 function createSendAccessToken(user, res, next) {
     const payload = { 
         id: user._id,
+        email: user.email
     };
 
     // create authentication token and respond w/ it

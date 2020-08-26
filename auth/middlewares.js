@@ -12,7 +12,8 @@ function verifyTokenIdentifyUser(req, res, next) {
                             res.status(498);
                             res.json({
                                 error: 'TokenExpiredError'
-                            })
+                            });
+                            next();
                         }
                         next();
                     }
@@ -23,6 +24,7 @@ function verifyTokenIdentifyUser(req, res, next) {
                 next();
             }
         } else {
+            console.log('no header');
             next();
         }
     } catch(error) {
@@ -34,6 +36,7 @@ function isLoggedIn(req, res, next) {
     if (req.user) {
         next();
     } else {
+        console.log(req.user);
         const error = new Error('Not Authorized');
         res.status(401).json();
         next(error);
