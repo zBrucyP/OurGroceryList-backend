@@ -8,7 +8,13 @@ function verifyTokenIdentifyUser(req, res, next) {
             if(token) {
                 jwt.verify(token, process.env.TOKEN_SECRET, (error, user) => {
                     if (error) {
-                        console.log(error);
+                        if(error.name === 'TokenExpiredError') {
+                            res.status(498);
+                            res.json({
+                                error: 'TokenExpiredError'
+                            })
+                        }
+                        next();
                     }
                     req.user = user
                     next();
@@ -29,7 +35,7 @@ function isLoggedIn(req, res, next) {
         next();
     } else {
         const error = new Error('Not Authorized');
-        res.status(401);
+        res.status(401).json();
         next(error);
     }
 }
