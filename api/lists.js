@@ -23,14 +23,15 @@ router.post('/newlist', (req, res) => {
     const validation = ListSchema.validate({
         name: req.body.listName
     });
-    console.log('in newlist');
 
     // no error, continue
     if(validation.error === undefined) { 
         // object to insert
         const newList = {
             name: req.body.listName,
-            users_email: req.user.email
+            users_email: req.user.email,
+            description: req.body.listDescrip,
+            listItems: []
         }
 
         lists.insert(newList).then((insertedList) => {
@@ -43,7 +44,35 @@ router.post('/newlist', (req, res) => {
 });
 
 router.get('/getAll', (req, res) => {
-    res.json('');
+    const user = req.user;
+    if (user) {
+        lists.find({ users_email: user.email }).then((lists) => {
+            res.json(lists);
+        });
+    } else {
+        res.status(400);
+        res.json();
+    }
+});
+
+router.post('/deleteList', (req, res) => {
+    const list_id = req.body.list_id;
+
+    if(list_id) {
+        lists.remove({ _id: list_id }).then(() => {
+            res.status(200).json();
+        });
+    } else {
+        res.json('no list id included');
+    }
+});
+
+router.post('/updateList', (req, res) => {
+
+});
+
+router.get('/list', (req, res) => {
+
 });
 
 module.exports = router;
