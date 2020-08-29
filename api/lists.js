@@ -8,7 +8,7 @@ const lists = db.get('lists');
 
 const ListSchema = Joi.object({
     name: Joi.string()
-        .min(4)
+        .min(2)
         .max(40)
         .trim()
         .required()
