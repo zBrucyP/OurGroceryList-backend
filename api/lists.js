@@ -72,7 +72,16 @@ router.post('/updateList', (req, res) => {
 });
 
 router.get('/list', (req, res) => {
+    const list_id = req.query.list_id; // get list id from url query param
 
+    if(list_id) {
+        lists.findOne({ _id: list_id }).then((list) => {
+            res.status(200);
+            res.json(list);
+        });
+    } else {
+        res.json('no list id in request');
+    }
 });
 
 module.exports = router;
