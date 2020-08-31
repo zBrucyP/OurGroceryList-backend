@@ -84,4 +84,25 @@ router.get('/list', (req, res) => {
     }
 });
 
+router.post('/addListItem', (req, res) => {
+    const list_id = req.query.list_id; // get list id from url query param
+    const item_to_add = {
+       name: req.body.name,
+       bought: req.body.bought || false,
+       price: req.body.price || 0
+    }; 
+
+    if(item_to_add.name != ''){
+        if(list_id) {
+            lists.findOneAndUpdate({ _id: list_id}, { $push: { listItems: item_to_add } }).then((updatedList) => {
+                res.status(200).json('list item added');
+            });
+        } else {
+            res.json('no list id in request');
+        }
+    } else {
+        res.json('no item name provided');
+    }
+});
+
 module.exports = router;

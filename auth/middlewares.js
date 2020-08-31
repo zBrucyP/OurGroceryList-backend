@@ -36,7 +36,6 @@ function isLoggedIn(req, res, next) {
     if (req.user) {
         next();
     } else {
-        console.log(req.user);
         const error = new Error('Not Authorized');
         res.status(401).json();
         next(error);
