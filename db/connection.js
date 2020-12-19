@@ -1,13 +1,11 @@
 const postgres = require('postgres'); // manage tasks with mongo
 
 const options = {
-    host: '127.0.0.1',
+    host: 'ec2-34-200-106-49.compute-1.amazonaws.com',
     port: 5432,
-    database: 'OurGroceryList',
-    username: 'user',
-    password: 'pass',
-    ssl: false,
-    max: 100,
+    database: dcbcmlgddgijb2,
+    username: process.env.postgres_username,
+    password: process.env.postgres_password,
     timeout: 10,
 }
 
