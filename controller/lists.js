@@ -3,9 +3,6 @@ const Joi = require('joi');
 
 const router = express.Router();
 
-const db = require('../db/connection');
-const lists = db.get('lists');
-
 const ListSchema = Joi.object({
     name: Joi.string()
         .min(2)
