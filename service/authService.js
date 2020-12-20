@@ -20,6 +20,19 @@ const signupSchema = Joi.object({
         .required(),
 });
 
+const loginSchema = Joi.object({
+    email: Joi.string()
+        .email()
+        .trim()
+        .required(),
+
+    password: Joi.string()
+        .trim()
+        .min(8)
+        .max(100)
+        .required(),
+});
+
 
 async function signup (user) {
     const validation = signupSchema.validate({
@@ -42,6 +55,22 @@ async function signup (user) {
     }
 }
 
+async function login (user) {
+    const validation = loginSchema.validate({
+        email: user.email,
+        password: user.password,
+    });
+    
+    if(validation.error === undefined) { // user-entered data passed validation check
+        await userDataAccess.findUser(user.email).then((user) => {
+            return true;
+        })
+    } else { // user-entered data did not meet requirements or there was another error
+        next('login schema validation failed');
+    }
+}
+
 module.exports = {
     signup,
+    login,
 }

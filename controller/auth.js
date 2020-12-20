@@ -7,19 +7,6 @@ const router = express.Router();
 
 const authService = require('../service/authService');
 
-const loginSchema = Joi.object({
-    email: Joi.string()
-        .email()
-        .trim()
-        .required(),
-
-    password: Joi.string()
-        .trim()
-        .min(8)
-        .max(100)
-        .required(),
-});
-
 
 function createSendAccessToken(user, res, next) {
     const payload = { 
@@ -45,31 +32,33 @@ router.get('/', (req, res) => {
 });
 
 router.post('/login', (req, res, next) => {
-    const validation = loginSchema.validate({
-        email: req.body.email,
+    const user = {
         password: req.body.password,
-    });
+        email: req.body.email,
+    };
+
+    const loginWasSuccessful = authService.login(user);
     
-    if(validation.error === undefined) { // user-entered data passed validation check
-        // check if user exists in database
-        users.findOne({email: req.body.email}).then((user) => {
-            if(user) { // user was found
-                // authenticate the user
-                bcrypt.compare(req.body.password, user.password).then((result) => {
-                    if(result) { // password is correct, authenticate user
-                        createSendAccessToken(user, res, next);
-                    } else { // password is incorrect
-                        repondError422(res, next);
-                    }
-                });
-            } else { // user was not found, return error
-                repondError422(res, next);
-            }
-        });
-    } else { // user-entered data did not meet requirements or there was another error
-        res.status(422);
-        next(validation.error);
-    }
+    // if(validation.error === undefined) { // user-entered data passed validation check
+    //     // check if user exists in database
+    //     users.findOne({email: req.body.email}).then((user) => {
+    //         if(user) { // user was found
+    //             // authenticate the user
+    //             bcrypt.compare(req.body.password, user.password).then((result) => {
+    //                 if(result) { // password is correct, authenticate user
+    //                     createSendAccessToken(user, res, next);
+    //                 } else { // password is incorrect
+    //                     repondError422(res, next);
+    //                 }
+    //             });
+    //         } else { // user was not found, return error
+    //             repondError422(res, next);
+    //         }
+    //     });
+    // } else { // user-entered data did not meet requirements or there was another error
+    //     res.status(422);
+    //     next(validation.error);
+    // }
 });
 
 router.post('/signup', (req, res, next) => {

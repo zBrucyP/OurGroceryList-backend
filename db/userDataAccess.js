@@ -41,6 +41,19 @@ async function insertUser(user) {
     }
 }
 
+async function findUser (email) {
+    const existingUser = await db`
+        SELECT *
+        FROM users
+        WHERE email=${email}
+    `
+    .then((user) => {
+        console.log(user[0]); //TODO: check that we are returning just a user object
+        return user;
+    });
+}
+
 module.exports = {
     insertUser,
+    findUser,
 }
