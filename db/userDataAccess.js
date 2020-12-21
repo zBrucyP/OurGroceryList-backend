@@ -1,5 +1,7 @@
 const db = require('../db/connection');
 const bcrypt = require('bcryptjs'); // was causing node not to launch 
+const { query } = require('express');
+const e = require('express');
 
 // https://www.npmjs.com/package/postgres
 
@@ -27,8 +29,7 @@ async function insertUser(user) {
                             );
                         `
                         .then((newUser) => {
-                            console.log(newUser);
-                            return true;
+                            if(newUser.count === 1) user.userWasCreated = true;
                         });
                     } catch (e) {
                         console.log(e);
@@ -41,16 +42,23 @@ async function insertUser(user) {
     }
 }
 
-async function findUser (email) {
-    const existingUser = await db`
-        SELECT *
-        FROM users
-        WHERE email=${email}
-    `
-    .then((user) => {
-        console.log(user[0]); //TODO: check that we are returning just a user object
-        return user;
-    });
+async function findUser (user) {
+    try {
+        const existingUser = await db`
+            SELECT *
+            FROM users
+            WHERE email=${user.email}
+        `
+        .then((queryResult) => {
+            if (queryResult.count === 1) {
+                user.passwordHashFromDB = queryResult[0].password;
+                user.wasFound = true; 
+                user.fname = queryResult[0].fname;
+            }
+        });
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 module.exports = {

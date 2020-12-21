@@ -1,11 +1,11 @@
 const express = require('express');
-const bcrypt = require('bcryptjs'); // was causing node not to launch
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
 const authService = require('../service/authService');
+const CONSTANTS = require('../utils/constants');
 
 
 function createSendAccessToken(user, res, next) {
@@ -17,7 +17,7 @@ function createSendAccessToken(user, res, next) {
     // create authentication token and respond w/ it
     jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '2h'}, (err, token) => {
         if(err) {
-            repondError422(res, next);
+            repondError500(res, next);
         } else {
             res.json({
                 fname: user.fname,
@@ -33,32 +33,17 @@ router.get('/', (req, res) => {
 
 router.post('/login', (req, res, next) => {
     const user = {
+        fname: '',
         password: req.body.password,
+        passwordHashFromDB: '',
         email: req.body.email,
+        wasFound: false,
+        errors: [],
     };
 
     const loginWasSuccessful = authService.login(user);
-    
-    // if(validation.error === undefined) { // user-entered data passed validation check
-    //     // check if user exists in database
-    //     users.findOne({email: req.body.email}).then((user) => {
-    //         if(user) { // user was found
-    //             // authenticate the user
-    //             bcrypt.compare(req.body.password, user.password).then((result) => {
-    //                 if(result) { // password is correct, authenticate user
-    //                     createSendAccessToken(user, res, next);
-    //                 } else { // password is incorrect
-    //                     repondError422(res, next);
-    //                 }
-    //             });
-    //         } else { // user was not found, return error
-    //             repondError422(res, next);
-    //         }
-    //     });
-    // } else { // user-entered data did not meet requirements or there was another error
-    //     res.status(422);
-    //     next(validation.error);
-    // }
+    if (loginWasSuccessful) { createSendAccessToken(user, res, next) }
+    else { respondError401(res, next, CONSTANTS.ERROR_MESSAGE_FAILED_LOGIN) }
 });
 
 router.post('/signup', (req, res, next) => {
@@ -66,24 +51,25 @@ router.post('/signup', (req, res, next) => {
         fname: req.body.fname,
         password: req.body.password,
         email: req.body.email,
+        userWasCreated: false,
+        errors: [],
     };
 
     const signupWasSuccessful = authService.signup(user);
 
-    if (signupWasSuccessful) {
-        createSendAccessToken({
-            fname: req.fname,
-            email: req.email,
-        }, res, next);
-    } else {
-        res.status(500);
-        next('could not signup user');
-    }
+    if (signupWasSuccessful) { createSendAccessToken(user, res, next) } 
+    else { respondError500(res, next, CONSTANTS.ERROR_MESSAGE_SIGNUP_FAILED) }
 });
 
-function repondError422(res, next, errorReason) {
-    res.status(422);
-    const error = new Error('Cannot login');
+function repondError500(res, next, errorReason) {
+    res.status(500);
+    const error = new Error(errorReason);
+    next(error);
+}
+
+function respondError401 (res, next, errorReason) {
+    res.status(401);
+    const error = new Error();
     next(error);
 }
 
