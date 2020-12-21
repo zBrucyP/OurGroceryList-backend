@@ -26,10 +26,14 @@ async function insertUser(user) {
                                 fname, password, email
                             ) VALUES (
                                 ${user.fname}, ${hash}, ${user.email}
-                            );
+                            )
+                            returning *
                         `
                         .then((newUser) => {
-                            if(newUser.count === 1) user.userWasCreated = true;
+                            if(newUser.count === 1) {
+                                user.id = newUser[0].id;
+                                user.userWasCreated = true;
+                            }
                         });
                     } catch (e) {
                         console.log(e);

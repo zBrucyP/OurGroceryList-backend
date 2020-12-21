@@ -1,5 +1,4 @@
 const express = require('express');
-const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
@@ -10,6 +9,7 @@ const CONSTANTS = require('../utils/constants');
 
 function createSendAccessToken(user, res, next) {
     const payload = { 
+        id: user.id,
         fname: user.fname,
         email: user.email
     };
@@ -33,6 +33,7 @@ router.get('/', (req, res) => {
 
 router.post('/login', (req, res, next) => {
     const user = {
+        id: '',
         fname: '',
         password: req.body.password,
         passwordHashFromDB: '',
@@ -48,6 +49,7 @@ router.post('/login', (req, res, next) => {
 
 router.post('/signup', (req, res, next) => {
     const user = {
+        id: '',
         fname: req.body.fname,
         password: req.body.password,
         email: req.body.email,

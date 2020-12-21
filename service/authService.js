@@ -44,6 +44,7 @@ async function signup (user) {
 
     if(validation.error === undefined) { // user-entered data passed validation check
         await userDataAccess.insertUser(user).then((userInserted) => {
+            console.log(user);
             return user.userWasCreated;
         });
     } else { // user-entered data did not meet requirements or there was another error
