@@ -1,42 +1,28 @@
 const express = require('express');
-const Joi = require('joi');
-
 const router = express.Router();
 
-const ListSchema = Joi.object({
-    name: Joi.string()
-        .min(2)
-        .max(40)
-        .trim()
-        .required()
-});
-
+const listService = require('../service/listService');
+const CONSTANTS = require('../utils/constants').constants;
 
 router.get('/', (req, res) => {
     res.json('in api lists');
 });
 
-router.post('/newlist', (req, res) => {
-    const validation = ListSchema.validate({
-        name: req.body.listName
-    });
-
-    // no error, continue
-    if(validation.error === undefined) { 
-        // object to insert
-        const newList = {
-            name: req.body.listName,
-            users_email: req.user.email,
-            description: req.body.listDescrip,
-            listItems: []
-        }
-
-        lists.insert(newList).then((insertedList) => {
-            res.status(200);
-            res.json('successfully added');
-        })
-    } else{
-        console.log(validation.error);
+router.post('/newlist', async (req, res, next) => {
+    const list = {
+        id: null,
+        name: req.body.name,
+        description: req.body.description,
+        ownerID: req.body.userID,
+        wasSuccessfullyAdded: false,
+        errors: []
+    };
+    try {
+        await listService.addList(list);
+        if (list.wasSuccessfullyAdded) { respondSuccess200(res, CONSTANTS.SUCCESS_MESSAGE_LIST_ADDED) }
+        else { repondError500(res, next, CONSTANTS.ERROR_MESSAGE_ADD_LIST_FAILED) } 
+    } catch (e) {
+        console.log(e);
     }
 });
 
@@ -101,5 +87,21 @@ router.post('/addListItem', (req, res) => {
         res.json('no item name provided');
     }
 });
+
+
+function respondSuccess200(res, message) {
+    res.status(200);
+    res.json({
+        actionSuccessful: true,
+        message: message,
+    })
+}
+
+function repondError500(res, next, errorReasonForUser) {
+    res.status(500);
+    res.json({
+        errorMessage: errorReasonForUser
+    });
+}
 
 module.exports = router;

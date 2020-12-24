@@ -59,7 +59,7 @@ async function login (user) {
     });
     
     if(validation.error === undefined) { // user-entered data passed validation check
-        await userDataAccess.findUser(user).then((result) => {
+        await userDataAccess.findUser(user).then(() => {
             if (user.wasFound) { // user was found
                 bcrypt.compare(user.password, user.passwordHashFromDB).then((result) => { // validate user
                     user.password = '';
