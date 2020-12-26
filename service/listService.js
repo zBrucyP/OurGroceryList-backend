@@ -59,10 +59,17 @@ async function getListItems(list) {
     })
 }
 
+async function addListItems(list) {
+    await listDataAccess.addListItems(list).then(() => {
+        return;
+    })
+}
+
 
 module.exports = {
     addList,
     getAllLists,
     deleteList,
-    getListItems
+    getListItems,
+    addListItems,
 }

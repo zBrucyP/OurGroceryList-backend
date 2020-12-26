@@ -4,7 +4,7 @@ const CONSTANTS = require('../utils/constants').constants;
 
 async function addList(list) {
     try{
-        const newList = await db`
+        const newListCall = await db`
             INSERT INTO lists (
                 name, description, owner
             ) VALUES (
@@ -23,7 +23,7 @@ async function addList(list) {
 
 async function getAllListsForUser(user) {
     try {
-        const lists = await db`
+        const getListsCall = await db`
             SELECT *
             FROM lists
             WHERE owner=${user.id}
@@ -39,7 +39,7 @@ async function getAllListsForUser(user) {
 
 async function deleteList(list) {
     try {
-        const delList = await db`
+        const deleteListCall = await db`
             DELETE FROM lists
             WHERE id=${list.id}
         `
@@ -54,7 +54,7 @@ async function deleteList(list) {
 
 async function getListItems(list) {
     try {
-        const list_items_call = await db`
+        const listItemsCall = await db`
             SELECT *
             FROM list_items
             WHERE list_id=${list.id}
@@ -69,9 +69,25 @@ async function getListItems(list) {
     } 
 }
 
+async function addListItems(list) {
+    try {
+        const addItemsCall = await db`
+            insert into list_items ${
+                db(list.listItems, 'list_id', 'name', 'description', 'price', 'quantity', 'bought')
+            }
+        `.then((itemsInserted) => {
+            list.itemsAddedSuccessfully = true;
+        });
+    } catch(e) {
+        const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
+        list.errors.push(error);
+    } 
+}
+
 module.exports = { 
     addList,
     getAllListsForUser,
     deleteList,
     getListItems,
+    addListItems,
 }

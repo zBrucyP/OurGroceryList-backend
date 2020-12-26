@@ -76,31 +76,26 @@ router.get('/listItems', async (req, res, next) => {
 
     if(list.id) {
         await listService.getListItems(list);
-        if(list.getDetailsSuccessful) (respondSuccess200(res, '', list))
+        if(list.getDetailsSuccessful) respondSuccess200(res, '', list);
         else repondError500(res, next, CONSTANTS.ERROR_GET_LIST_ITEMS_FAILED);
     } else {
         respondError400(res, next, CONSTANTS.ERROR_INFO_NOT_PROVIDED);
     }
 });
 
-router.post('/addListItem', (req, res) => {
-    const list_id = req.query.list_id; // get list id from url query param
-    const item_to_add = {
-       name: req.body.name,
-       bought: req.body.bought || false,
-       price: req.body.price || 0
-    }; 
+router.post('/addListItems', async (req, res, next) => {
+    const list = {
+        listItems: req.body.listItems,
+        itemsAddedSuccessfully: false,
+        errors: [],
+    }
 
-    if(item_to_add.name != ''){
-        if(list_id) {
-            lists.findOneAndUpdate({ _id: list_id}, { $push: { listItems: item_to_add } }).then((updatedList) => {
-                res.status(200).json('list item added');
-            });
-        } else {
-            res.json('no list id in request');
-        }
+    if (list.listItems) {
+        await listService.addListItems(list);
+        if(list.itemsAddedSuccessfully) respondSuccess200(res, '', '')
+        else repondError500(res, next, CONSTANTS.ERROR_ADD_LIST_ITEMS_FAILED);
     } else {
-        res.json('no item name provided');
+        respondError400(res, next, CONSTANTS.ERROR_INFO_NOT_PROVIDED);
     }
 });
 
