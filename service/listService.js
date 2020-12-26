@@ -1,6 +1,7 @@
 const Joi = require('joi');
 
 const listDataAccess = require('../db/listsDataAccess');
+const CONSTANTS = require('../utils/constants').constants;
 
 const ListSchema = Joi.object({
     name: Joi.string()
@@ -40,8 +41,10 @@ async function addList(list) {
     }
 }
 
-function getAllLists() {
-
+async function getAllLists(user) {
+    await listDataAccess.getAllListsForUser(user).then(() => {
+        return;
+    })
 }
 
 

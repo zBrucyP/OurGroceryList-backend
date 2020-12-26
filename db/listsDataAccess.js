@@ -18,11 +18,23 @@ async function addList(list) {
     }
 }
 
-async function getAllLists() {
-
+async function getAllListsForUser(user) {
+    try {
+        const lists = await db`
+            SELECT *
+            FROM lists
+            WHERE owner=${user.id}
+        `.then((lists) => {
+            user.getListsWasSuccessful = true;
+            user.lists = lists;
+            console.log(lists);
+        })
+    } catch(e) {
+        console.log(e);
+    }
 }
 
 module.exports = { 
     addList,
-    getAllLists,
+    getAllListsForUser,
 }

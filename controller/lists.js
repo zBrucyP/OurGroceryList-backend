@@ -19,22 +19,30 @@ router.post('/newlist', async (req, res, next) => {
     };
     try {
         await listService.addList(list);
-        if (list.wasSuccessfullyAdded) { respondSuccess200(res, CONSTANTS.SUCCESS_MESSAGE_LIST_ADDED) }
+        if (list.wasSuccessfullyAdded) { respondSuccess200(res, CONSTANTS.SUCCESS_MESSAGE_LIST_ADDED, '') }
         else { repondError500(res, next, CONSTANTS.ERROR_MESSAGE_ADD_LIST_FAILED) } 
     } catch (e) {
         console.log(e);
     }
 });
 
-router.get('/getAll', (req, res) => {
-    const user = req.user;
-    if (user) {
-        lists.find({ users_email: user.email }).then((lists) => {
-            res.json(lists);
-        });
+router.get('/getAll', async (req, res, next) => {
+    const user = {
+        id: req.body.user.id || '',
+        getListsWasSuccessful: false,
+        lists: [],
+    }
+    if (user.id != '') {
+        try{
+            await listService.getAllLists(user);
+            if (user.getListsWasSuccessful) { respondSuccess200(res, '', user.lists) }
+            else { repondError500(res, next, CONSTANTS.ERROR_GET_LISTS_FAILED) }
+        } catch (e) {
+            console.log(e);
+            repondError500(res, next, CONSTANTS.ERROR_GET_LISTS_FAILED)
+        }
     } else {
-        res.status(400);
-        res.json();
+        respondError400(res, next, CONSTANTS.ERROR_USER_NOT_PROVIDED);
     }
 });
 
@@ -89,11 +97,12 @@ router.post('/addListItem', (req, res) => {
 });
 
 
-function respondSuccess200(res, message) {
+function respondSuccess200(res, message, payload) {
     res.status(200);
     res.json({
         actionSuccessful: true,
         message: message,
+        payload: payload,
     })
 }
 
@@ -102,6 +111,13 @@ function repondError500(res, next, errorReasonForUser) {
     res.json({
         errorMessage: errorReasonForUser
     });
+}
+
+function respondError400(res, next, errorReasonForUser) {
+    res.status(400);
+    res.json({
+        errorMessage: errorReasonForUser
+    })
 }
 
 module.exports = router;
