@@ -31,6 +31,7 @@ router.get('/getAll', async (req, res, next) => {
         id: req.body.user.id || '',
         getListsWasSuccessful: false,
         lists: [],
+        errors: [],
     }
     if (user.id != '') {
         try{
@@ -38,7 +39,6 @@ router.get('/getAll', async (req, res, next) => {
             if (user.getListsWasSuccessful) { respondSuccess200(res, '', user.lists) }
             else { repondError500(res, next, CONSTANTS.ERROR_GET_LISTS_FAILED) }
         } catch (e) {
-            console.log(e);
             repondError500(res, next, CONSTANTS.ERROR_GET_LISTS_FAILED)
         }
     } else {

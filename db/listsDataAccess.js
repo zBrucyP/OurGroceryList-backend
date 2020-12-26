@@ -1,4 +1,6 @@
 const db = require('../db/connection');
+const CONSTANTS = require('../utils/constants').constants;
+
 
 async function addList(list) {
     try{
@@ -14,7 +16,8 @@ async function addList(list) {
             if(addedList && addedList.count === 1) { list.wasSuccessfullyAdded = true }
         });
     } catch(e) {
-        console.log(e);
+        const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
+        list.errors.push(error);
     }
 }
 
@@ -30,7 +33,8 @@ async function getAllListsForUser(user) {
             console.log(lists);
         })
     } catch(e) {
-        console.log(e);
+        const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
+        list.errors.push(error);
     }
 }
 
