@@ -46,15 +46,19 @@ router.get('/getAll', async (req, res, next) => {
     }
 });
 
-router.post('/deleteList', (req, res) => {
-    const list_id = req.body.list_id;
+router.post('/deleteList', async (req, res) => {
+    const list = {
+        id: req.body.list_id,
+        wasDeleted: false,
+        errors: []
+    }
 
-    if(list_id) {
-        lists.remove({ _id: list_id }).then(() => {
-            res.status(200).json();
-        });
+    if(list.id) {
+        await listService.deleteList(list);
+        if (list.wasDeleted) { respondSuccess200(res, '', '') }
+        else { repondError500(res, next, CONSTANTS.ERROR_DELETE_LIST_FAILED) }
     } else {
-        res.json('no list id included');
+        respondError400(res, next, CONSTANTS.ERROR_INFO_NOT_PROVIDED);
     }
 });
 

@@ -30,7 +30,6 @@ async function getAllListsForUser(user) {
         `.then((lists) => {
             user.getListsWasSuccessful = true;
             user.lists = lists;
-            console.log(lists);
         })
     } catch(e) {
         const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
@@ -38,7 +37,23 @@ async function getAllListsForUser(user) {
     }
 }
 
+async function deleteList(list) {
+    try {
+        const delList = await db`
+            DELETE FROM lists
+            WHERE id=${list.id}
+        `
+        .then((deletedList) => {
+            if(deletedList.count === 1) { list.wasDeleted = true } 
+        })
+    } catch(e) {
+        const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
+        list.errors.push(error);
+    } 
+}
+
 module.exports = { 
     addList,
     getAllListsForUser,
+    deleteList,
 }

@@ -47,8 +47,15 @@ async function getAllLists(user) {
     })
 }
 
+async function deleteList(list) {
+    await listDataAccess.deleteList(list).then(() => {
+        return;
+    })
+}
+
 
 module.exports = {
     addList,
     getAllLists,
+    deleteList,
 }

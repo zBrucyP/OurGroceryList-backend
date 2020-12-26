@@ -4,8 +4,9 @@ constants = {
     ERROR_MESSAGE_ADD_LIST_FAILED: 'Could not add list',
     ERROR_SCHEMA_VALIDATION: 'ERROR_SCHEMA_VALIDATION', 
     ERROR_DB_CALL_FAILED: 'ERROR_DB_CALL_FAILED',
-    ERROR_USER_NOT_PROVIDED: 'User info was not provided',
+    ERROR_INFO_NOT_PROVIDED: 'Necessary info was not provided',
     ERROR_GET_LISTS_FAILED: 'Issue getting lists for user',
+    ERROR_DELETE_LIST_FAILED: 'Could not delete list',
 
     SUCCESS_MESSAGE_LIST_ADDED: 'List was successfully added',
 }
