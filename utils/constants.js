@@ -7,6 +7,7 @@ constants = {
     ERROR_INFO_NOT_PROVIDED: 'Necessary info was not provided',
     ERROR_GET_LISTS_FAILED: 'Issue getting lists for user',
     ERROR_DELETE_LIST_FAILED: 'Could not delete list',
+    ERROR_GET_LIST_ITEMS_FAILED: 'Could not get list items',
 
     TABLE_USERS: 'users',
     TABLE_LISTS: 'lists',

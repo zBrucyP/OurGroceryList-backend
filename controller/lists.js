@@ -77,6 +77,7 @@ router.get('/listItems', async (req, res, next) => {
     if(list.id) {
         await listService.getListItems(list);
         if(list.getDetailsSuccessful) (respondSuccess200(res, '', list))
+        else repondError500(res, next, CONSTANTS.ERROR_GET_LIST_ITEMS_FAILED);
     } else {
         respondError400(res, next, CONSTANTS.ERROR_INFO_NOT_PROVIDED);
     }
