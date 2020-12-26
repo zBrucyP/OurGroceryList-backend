@@ -46,7 +46,7 @@ router.get('/getAll', async (req, res, next) => {
     }
 });
 
-router.post('/deleteList', async (req, res) => {
+router.post('/deleteList', async (req, res, next) => {
     const list = {
         id: req.body.list_id,
         wasDeleted: false,
@@ -66,16 +66,19 @@ router.post('/updateList', (req, res) => {
 
 });
 
-router.get('/list', (req, res) => {
-    const list_id = req.query.list_id; // get list id from url query param
+router.get('/listItems', async (req, res, next) => {
+    const list = {
+        id: req.body.id,
+        items: [],
+        getDetailsSuccessful: false,
+        errors: [],
+    }
 
-    if(list_id) {
-        lists.findOne({ _id: list_id }).then((list) => {
-            res.status(200);
-            res.json(list);
-        });
+    if(list.id) {
+        await listService.getListItems(list);
+        if(list.getDetailsSuccessful) (respondSuccess200(res, '', list))
     } else {
-        res.json('no list id in request');
+        respondError400(res, next, CONSTANTS.ERROR_INFO_NOT_PROVIDED);
     }
 });
 

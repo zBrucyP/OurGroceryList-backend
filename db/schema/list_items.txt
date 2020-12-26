@@ -1,0 +1,9 @@
+CREATE TABLE list_items(
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  list_id text,
+  name text,
+  description text,
+  price numeric(7, 2),
+  quantity integer,
+  bought boolean
+);

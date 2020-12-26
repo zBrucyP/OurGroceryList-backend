@@ -45,7 +45,24 @@ async function deleteList(list) {
         `
         .then((deletedList) => {
             if(deletedList.count === 1) { list.wasDeleted = true } 
-        })
+        });
+    } catch(e) {
+        const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
+        list.errors.push(error);
+    } 
+}
+
+async function getListItems(list) {
+    try {
+        const list_items_call = await db`
+            SELECT *
+            FROM list_items
+            WHERE list_id=${list.id}
+        `.then((returnedListItems) => {
+            console.log(returnedListItems);
+            list.items = returnedListItems;
+            list.getDetailsSuccessful = true;
+        });
     } catch(e) {
         const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
         list.errors.push(error);
@@ -56,4 +73,5 @@ module.exports = {
     addList,
     getAllListsForUser,
     deleteList,
+    getListItems,
 }

@@ -8,6 +8,10 @@ constants = {
     ERROR_GET_LISTS_FAILED: 'Issue getting lists for user',
     ERROR_DELETE_LIST_FAILED: 'Could not delete list',
 
+    TABLE_USERS: 'users',
+    TABLE_LISTS: 'lists',
+    TABLE_LIST_ITEMS: 'list_items',
+
     SUCCESS_MESSAGE_LIST_ADDED: 'List was successfully added',
 }
 

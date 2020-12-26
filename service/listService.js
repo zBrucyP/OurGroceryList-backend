@@ -53,9 +53,16 @@ async function deleteList(list) {
     })
 }
 
+async function getListItems(list) {
+    await listDataAccess.getListItems(list).then(() => {
+        return;
+    })
+}
+
 
 module.exports = {
     addList,
     getAllLists,
     deleteList,
+    getListItems
 }
