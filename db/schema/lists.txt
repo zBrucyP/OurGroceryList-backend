@@ -1,0 +1,6 @@
+CREATE TABLE lists (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name text,
+  description text,
+  owner UUID
+);

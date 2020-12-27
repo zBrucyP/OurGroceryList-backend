@@ -5,9 +5,9 @@ const helmet = require('helmet');
 
 const app = express();
 
-const authMiddleware = require('./auth/middlewares');
-const auth = require('./auth/index');
-const lists = require('./api/lists');
+const authMiddleware = require('./interceptor/auth');
+const auth = require('./controller/auth');
+const lists = require('./controller/lists');
 
 app.use(helmet());
 app.use(cors());
