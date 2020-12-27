@@ -25,7 +25,6 @@ function createSendAccessToken(user, res, next) {
                 res.json({
                     fname: user.fname,
                     token: token,
-                    ogcid: user.id,
                 });
             }
         },

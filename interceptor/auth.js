@@ -5,19 +5,19 @@ function verifyTokenIdentifyUser(req, res, next) {
         const authHeader = req.get('authorization');
         if (authHeader) {
             const token = authHeader.split(' ')[1];
-            if(token) {
+            if (token) {
                 jwt.verify(token, process.env.TOKEN_SECRET, (error, user) => {
                     if (error) {
-                        if(error.name === 'TokenExpiredError') {
+                        if (error.name === 'TokenExpiredError') {
                             res.status(498);
                             res.json({
-                                error: 'TokenExpiredError'
+                                error: 'TokenExpiredError',
                             });
                             next();
                         }
                         next();
                     }
-                    req.user = user
+                    req.user = user;
                     next();
                 });
             } else {
@@ -27,7 +27,7 @@ function verifyTokenIdentifyUser(req, res, next) {
             console.log('no header');
             next();
         }
-    } catch(error) {
+    } catch (error) {
         next(error);
     }
 }
