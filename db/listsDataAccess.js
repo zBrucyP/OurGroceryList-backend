@@ -61,7 +61,25 @@ async function getListItems(list) {
             WHERE list_id=${list.id}
         `.then((returnedListItems) => {
             list.items = returnedListItems;
-            list.getDetailsSuccessful = true;
+            list.getListItemsSuccessful = true;
+        });
+    } catch (e) {
+        const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
+        list.errors.push(error);
+    }
+}
+
+async function getListDetails(list) {
+    try {
+        const listDetailsCall = await db`
+            SELECT name
+            FROM lists
+            WHERE id=${list.id}
+        `.then((returnedName) => {
+            if(returnedName.length > 0) {
+                list.name = returnedName[0].name;
+                list.getDetailsSuccessful = true;
+            }
         });
     } catch (e) {
         const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
@@ -96,4 +114,5 @@ module.exports = {
     deleteList,
     getListItems,
     addListItems,
+    getListDetails
 };

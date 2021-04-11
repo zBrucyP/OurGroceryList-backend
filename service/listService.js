@@ -12,6 +12,7 @@ const ListSchema = Joi.object({
 
     description: Joi.string()
         .max(140)
+        .allow('', null)
         .trim(),
 
     ownerID: Joi.string()
@@ -25,7 +26,6 @@ async function addList(list) {
         description: list.description,
         ownerID: list.ownerID,
     });
-
     if(validation.error === undefined) { // no error, continue
         await listDataAccess.addList(list).then(() => {
             if (list.wasSuccessfullyAdded) {
@@ -59,6 +59,12 @@ async function getListItems(list) {
     })
 }
 
+async function getListDetails(list) {
+    await listDataAccess.getListDetails(list).then(() => {
+        return;
+    })
+}
+
 async function addListItems(list) {
     await listDataAccess.addListItems(list).then(() => {
         return;
@@ -71,5 +77,6 @@ module.exports = {
     getAllLists,
     deleteList,
     getListItems,
+    getListDetails,
     addListItems,
 }

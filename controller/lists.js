@@ -73,16 +73,19 @@ router.post('/deleteList', async (req, res, next) => {
 
 router.post('/updateList', (req, res) => {});
 
-router.post('/listItems', async (req, res, next) => {
+router.post('/listDetails', async (req, res, next) => {
     const list = {
-        id: req.body.list.id,
+        id: req.body.id,
+        name: null,
         items: [],
+        getListItemsSuccessful: false,
         getDetailsSuccessful: false,
         errors: [],
     };
 
     if (list.id) {
         await listService.getListItems(list);
+        await listService.getListDetails(list)
         if (list.getDetailsSuccessful) respondSuccess200(res, '', list);
         else repondError500(res, next, CONSTANTS.ERROR_GET_LIST_ITEMS_FAILED);
     } else {
