@@ -9,6 +9,7 @@ constants = {
     ERROR_DELETE_LIST_FAILED: 'Could not delete list',
     ERROR_GET_LIST_ITEMS_FAILED: 'Could not get list items',
     ERROR_ADD_LIST_ITEMS_FAILED: 'Could not add list items',
+    ERROR_UPDATE_LIST_ITEMS_FAILED: 'Could not update list items',
 
     TABLE_USERS: 'users',
     TABLE_LISTS: 'lists',

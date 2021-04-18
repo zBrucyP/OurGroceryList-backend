@@ -71,8 +71,6 @@ router.post('/deleteList', async (req, res, next) => {
     }
 });
 
-router.post('/updateList', (req, res) => {});
-
 router.post('/listDetails', async (req, res, next) => {
     const list = {
         id: req.body.id,
@@ -104,6 +102,22 @@ router.post('/addListItems', async (req, res, next) => {
         await listService.addListItems(list);
         if (list.itemsAddedSuccessfully) respondSuccess200(res, '', '');
         else repondError500(res, next, CONSTANTS.ERROR_ADD_LIST_ITEMS_FAILED);
+    } else {
+        respondError400(res, next, CONSTANTS.ERROR_INFO_NOT_PROVIDED);
+    }
+});
+
+router.post('/updateListItems', async (req, res, next) => {
+    const list = {
+        listItems: req.body.listItems,
+        itemsUpdatedSuccessfully: false,
+        errors: [],
+    };
+
+    if (list.listItems) {
+        await listService.updateListItems(list);
+        if (list.itemsUpdatedSuccessfully) respondSuccess200(res, '', '');
+        else repondError500(res, next, CONSTANTS.ERROR_UPDATE_LIST_ITEMS_FAILED);
     } else {
         respondError400(res, next, CONSTANTS.ERROR_INFO_NOT_PROVIDED);
     }

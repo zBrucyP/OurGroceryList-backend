@@ -2,6 +2,7 @@ const Joi = require('joi');
 
 const listDataAccess = require('../db/listsDataAccess');
 const CONSTANTS = require('../utils/constants').constants;
+const Utils = require('../utils/Utils');
 
 const ListSchema = Joi.object({
     name: Joi.string()
@@ -71,6 +72,21 @@ async function addListItems(list) {
     })
 }
 
+async function updateListItems(list) {
+    let allUpdatesSuccessful = true;
+    try {
+        for (const listItem of list.listItems) {
+            const mappedListItem = Utils.mapRequestObjectToUpdateListItem(listItem);
+            await listDataAccess.updateListItem(mappedListItem).then(() => {
+                if (!mappedListItem.updateSuccessful) allUpdatesSuccessful = false;
+            })
+        }
+    } catch (e) {
+        console.log(e);
+    }
+    list.itemsUpdatedSuccessfully = allUpdatesSuccessful;
+}
+
 
 module.exports = {
     addList,
@@ -79,4 +95,5 @@ module.exports = {
     getListItems,
     getListDetails,
     addListItems,
+    updateListItems,
 }

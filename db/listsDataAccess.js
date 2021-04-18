@@ -108,11 +108,29 @@ async function addListItems(list) {
     }
 }
 
+async function updateListItem(listItem) {
+    console.log(listItem);
+    try {
+        const addItemsCall = await db`
+            UPDATE list_items SET ${
+                db(listItem, 'name', 'description', 'price', 'quantity', 'bought')
+            } WHERE id=${ listItem.id }
+        `.then((updatedItem) => {
+            listItem.updateSuccessful = true;
+        });
+    } catch (e) {
+        //const error = new Error(CONSTANTS.ERROR_DB_CALL_FAILED);
+        //list.errors.push(error);
+        console.log(e);
+    }
+}
+
 module.exports = {
     addList,
     getAllListsForUser,
     deleteList,
     getListItems,
     addListItems,
-    getListDetails
+    getListDetails,
+    updateListItem,
 };
